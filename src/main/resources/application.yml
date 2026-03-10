@@ -3,13 +3,20 @@ v2:
   xnljmap:
    #win服务器  本地 注意！！ 记住这个结尾有一个/
    oss: file:D:/upload/
+   #file:D:/upload/
+   #file:/opt/goview/upload/
    #linux服务器
    #oss: file:/home/webapps/oss/
   #虚拟路径映射路径 end
   #本地存放地址 注意！！ 记住这个结尾没有/
   fileurl: D:/upload
+  #/opt/goview/upload
+  #D:/upload
+  #/opt/goview/upload
   #http://127.0.0.1:8080/oss/{yy}/2022-12-22/c83a77ae134a540c30daa6a0666fa945.md
   httpurl: http://127.0.0.1:8083/
+  #http://127.0.0.1:8083/
+  #https://goview.drxworkbench.dpdns.org/
   defaultFormat: .png
 #tomcat config
 server :

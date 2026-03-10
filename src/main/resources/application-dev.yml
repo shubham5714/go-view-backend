@@ -2,7 +2,9 @@
 spring:
   datasource:
     driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:D:\\eclipse-workspace\v2-goview-bate\sqllite\goview.db
+    url: jdbc:sqlite:D:\\Cursor\\go-view-serve\\sqllite\\goview.db
+    #jdbc:sqlite:D:\\Cursor\\go-view-serve\\sqllite\\goview.db
+    #jdbc:sqlite:/opt/goview/sqllite/goview.db
     #linux服务器
     #url: jdbc:sqlite://home/cqfy/project/OSSDATABASE/oss.db
     username: 

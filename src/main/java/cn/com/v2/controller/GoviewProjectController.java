@@ -27,6 +27,7 @@ import cn.com.v2.service.IGoviewProjectDataService;
 import cn.com.v2.service.IGoviewProjectService;
 import cn.com.v2.service.ISysFileService;
 import cn.com.v2.util.ConvertUtil;
+import cn.com.v2.util.SaTokenUtil;
 import cn.com.v2.util.SnowflakeIdWorker;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.bean.BeanUtil;
@@ -67,7 +68,9 @@ public class GoviewProjectController  extends BaseController{
 	@ResponseBody
 	public ResultTable list(Tablepar tablepar){
 		Page<GoviewProject> page= new Page<GoviewProject>(tablepar.getPage(), tablepar.getLimit());
-		IPage<GoviewProject> iPages=iGoviewProjectService.page(page, new LambdaQueryWrapper<GoviewProject>());
+		LambdaQueryWrapper<GoviewProject> queryWrapper = new LambdaQueryWrapper<GoviewProject>()
+				.eq(GoviewProject::getCreateUserId, SaTokenUtil.getUserId());
+		IPage<GoviewProject> iPages=iGoviewProjectService.page(page, queryWrapper);
 		ResultTable resultTable=new ResultTable();
 		resultTable.setData(iPages.getRecords());
 		resultTable.setCode(200);
@@ -89,6 +92,7 @@ public class GoviewProjectController  extends BaseController{
 	public AjaxResult add(@RequestBody GoviewProject goviewProject){
 		goviewProject.setCreateTime(DateUtil.now());
 		goviewProject.setState(-1);
+		goviewProject.setCreateUserId(SaTokenUtil.getUserId());
 		boolean b=iGoviewProjectService.save(goviewProject);
 		if(b){
 			return successData(200, goviewProject).put("msg", "创建成功");
