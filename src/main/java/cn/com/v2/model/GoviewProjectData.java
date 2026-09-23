@@ -18,7 +18,7 @@ import java.sql.SQLException;
  * @author fc
  * @since 2023-04-30
  */
-@TableName("t_goview_project_data")
+@TableName("goview_project_data")
 @Data
 public class GoviewProjectData implements Serializable {
 

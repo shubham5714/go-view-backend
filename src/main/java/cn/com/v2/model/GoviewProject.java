@@ -5,25 +5,19 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * <p>
- * 
- * </p>
- *
- * @author fc
- * @since 2023-04-30
+ * Tenant-scoped GoView dashboard project (AI-SOC tenant_id).
  */
-@TableName("t_goview_project")
+@TableName("goview_project")
 @Data
 public class GoviewProject implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @TableId(type = IdType.ASSIGN_ID)
     private String id;
 
@@ -34,6 +28,11 @@ public class GoviewProject implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private String createTime;
 
+    /**
+     * AI-SOC tenants.id stored as text for MyBatis string binding.
+     */
+    private String tenantId;
+
     private String createUserId;
 
     private Integer isDelete;
@@ -41,5 +40,10 @@ public class GoviewProject implements Serializable {
     private String indexImage;
 
     private String remarks;
+
+    /**
+     * Whether this project is a reusable template (1) or a normal project (0/null).
+     */
+    private Integer isTemplate;
 
 }

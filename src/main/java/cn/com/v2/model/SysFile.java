@@ -5,17 +5,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author fc
- * @since 2022-12-22
- */
-@TableName("t_sys_file")
+@TableName("goview_file")
 public class SysFile implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -23,30 +16,22 @@ public class SysFile implements Serializable {
     @TableId(value = "id", type = IdType.INPUT)
     private String id;
 
+    private String tenantId;
+
     private String fileName;
 
     private Integer fileSize;
 
     private String fileSuffix;
-    
-    /**
-     * 虚拟路径
-     */
+
     private String virtualKey;
-    
-    /**
-     * 相对路径
-     */
+
     private String relativePath;
-    
-    /**
-     * 绝对路径
-     */
+
     private String absolutePath;
-    
-    
-    
-    
+
+    private String createUserId;
+
     @TableField(fill = FieldFill.INSERT)
     private String createTime;
 
@@ -57,6 +42,15 @@ public class SysFile implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
     public String getFileName() {
         return fileName;
     }
@@ -64,7 +58,7 @@ public class SysFile implements Serializable {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-   
+
     public Integer getFileSize() {
         return fileSize;
     }
@@ -72,6 +66,7 @@ public class SysFile implements Serializable {
     public void setFileSize(Integer fileSize) {
         this.fileSize = fileSize;
     }
+
     public String getFileSuffix() {
         return fileSuffix;
     }
@@ -79,6 +74,7 @@ public class SysFile implements Serializable {
     public void setFileSuffix(String fileSuffix) {
         this.fileSuffix = fileSuffix;
     }
+
     public String getCreateTime() {
         return createTime;
     }
@@ -86,34 +82,36 @@ public class SysFile implements Serializable {
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
-    
 
-	public String getVirtualKey() {
-		return virtualKey;
-	}
+    public String getVirtualKey() {
+        return virtualKey;
+    }
 
-	public void setVirtualKey(String virtualKey) {
-		this.virtualKey = virtualKey;
-	}
+    public void setVirtualKey(String virtualKey) {
+        this.virtualKey = virtualKey;
+    }
 
-	public String getAbsolutePath() {
-		return absolutePath;
-	}
+    public String getAbsolutePath() {
+        return absolutePath;
+    }
 
-	public void setAbsolutePath(String absolutePath) {
-		this.absolutePath = absolutePath;
-	}
+    public void setAbsolutePath(String absolutePath) {
+        this.absolutePath = absolutePath;
+    }
 
-	public String getRelativePath() {
-		return relativePath;
-	}
+    public String getRelativePath() {
+        return relativePath;
+    }
 
-	public void setRelativePath(String relativePath) {
-		this.relativePath = relativePath;
-	}
+    public void setRelativePath(String relativePath) {
+        this.relativePath = relativePath;
+    }
 
+    public String getCreateUserId() {
+        return createUserId;
+    }
 
-
-	
-	
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId;
+    }
 }

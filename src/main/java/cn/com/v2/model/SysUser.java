@@ -35,5 +35,13 @@ public class SysUser implements Serializable {
 
     private String posId;
 
- 
+    /**
+     * Whether MFA (TOTP) is enabled for this user (0/1 in DB).
+     */
+    private Integer mfaEnabled;
+
+    /**
+     * Base32-encoded TOTP secret used by Google Authenticator.
+     */
+    private String mfaSecret;
 }

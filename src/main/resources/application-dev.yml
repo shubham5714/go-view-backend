@@ -1,18 +1,11 @@
-#dev环境  mysql7.0
+# Postgres / Supabase — requires GOVIEW_DB_* env vars (see .env + run-dev.ps1).
+# Plain `mvnd spring-boot:run` without env will fail fast instead of hitting localhost.
 spring:
   datasource:
-    driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:D:\\Cursor\\go-view-serve\\sqllite\\goview.db
-    #jdbc:sqlite:D:\\Cursor\\go-view-serve\\sqllite\\goview.db
-    #jdbc:sqlite:/opt/goview/sqllite/goview.db
-    #linux服务器
-    #url: jdbc:sqlite://home/cqfy/project/OSSDATABASE/oss.db
-    username: 
-    password: 
-    ### 连接池配置
-    druid:
-      initial-size: 10
-      max-active: 100
-      min-idle: 30
-      max-wait: 40
-      validation-query: SELECT 1
+    driver-class-name: org.postgresql.Driver
+    url: ${GOVIEW_DB_URL}
+    username: ${GOVIEW_DB_USER}
+    password: ${GOVIEW_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 30000
