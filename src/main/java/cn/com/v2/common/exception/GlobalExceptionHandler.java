@@ -30,4 +30,11 @@ public class GlobalExceptionHandler {
         AjaxResult body = AjaxResult.error(500, message);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<AjaxResult> handleException(Exception e) {
+        String message = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+        AjaxResult body = AjaxResult.error(500, message);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
 }

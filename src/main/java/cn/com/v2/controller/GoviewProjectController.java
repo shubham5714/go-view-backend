@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -303,7 +304,7 @@ public class GoviewProjectController extends BaseController {
 	}
 
 	@PostMapping("/upload")
-	public AjaxResult upload(@RequestBody MultipartFile object) throws IOException {
+	public AjaxResult upload(@RequestParam("object") MultipartFile object) throws IOException {
 		String tenantId = SaTokenUtil.requireTenantId();
 		String userId = SaTokenUtil.getUserId();
 		String fileName = object.getOriginalFilename();
@@ -335,7 +336,7 @@ public class GoviewProjectController extends BaseController {
 		sysFile.setAbsolutePath(absolutePath.replace("file:", ""));
 		iSysFileService.saveOrUpdate(sysFile);
 		File desc = FileController.getAbsoluteFile(v2Config.getFileurl() + File.separator + filepath, fileSuffixName);
-		object.transferTo(desc);
+		FileController.writeMultipartFile(object, desc);
 		SysFileVo sysFileVo = BeanUtil.copyProperties(sysFile, SysFileVo.class);
 		sysFileVo.setFileurl(v2Config.getHttpurl() + sysFile.getVirtualKey() + "/" + sysFile.getRelativePath() + "/" + sysFile.getFileName());
 		return successData(200, sysFileVo);

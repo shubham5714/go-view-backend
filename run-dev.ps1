@@ -1,9 +1,12 @@
-# Load .env, build with mvnd, run the WAR with JDK 17 --add-opens.
-# Usage:  .\run-dev.ps1
-# Optional:  .\run-dev.ps1 -SkipBuild
+# Load .env, build with mvnd/mvn, run the WAR with JDK 17 --add-opens.
+# Usage:
+#   .\run-dev.ps1
+#   .\run-dev.ps1 -SkipBuild
+#   .\run-dev.ps1 -Profile prod
 
 param(
-  [switch]$SkipBuild
+  [switch]$SkipBuild,
+  [string]$Profile = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,6 +30,10 @@ Get-Content $envFile -Encoding UTF8 | ForEach-Object {
   Set-Item -Path ("Env:" + $key) -Value $val
 }
 
+if ($Profile) {
+  $env:SPRING_PROFILES_ACTIVE = $Profile
+}
+
 # Do NOT set JAVA_TOOL_OPTIONS / MAVEN_OPTS here - they break the mvnd daemon.
 Remove-Item Env:JAVA_TOOL_OPTIONS -ErrorAction SilentlyContinue
 Remove-Item Env:MAVEN_OPTS -ErrorAction SilentlyContinue
@@ -36,12 +43,13 @@ if (-not $env:GOVIEW_DB_URL -or $env:GOVIEW_DB_URL -like "*127.0.0.1*") {
 }
 
 Write-Host ("GOVIEW_DB_URL=" + $env:GOVIEW_DB_URL)
-Write-Host ("GOVIEW_DB_USER=" + $env:GOVIEW_DB_USER)
+Write-Host ("SPRING_PROFILES_ACTIVE=" + $env:SPRING_PROFILES_ACTIVE)
+Write-Host ("SERVER_PORT=" + $(if ($env:SERVER_PORT) { $env:SERVER_PORT } else { "8083" }))
 
 $war = Join-Path $PSScriptRoot "target\goview_admin-0.0.1-SNAPSHOT.war"
 
 if (-not $SkipBuild) {
-  Write-Host "Building (mvnd clean package -DskipTests)..."
+  Write-Host "Building (mvnd/mvn clean package -DskipTests)..."
   if (Get-Command mvnd -ErrorAction SilentlyContinue) {
     & mvnd clean package -DskipTests
   } else {
@@ -54,6 +62,13 @@ if (-not $SkipBuild) {
 
 if (-not (Test-Path $war)) {
   Write-Error "WAR not found: $war  (run without -SkipBuild first)"
+}
+
+# Ensure local Windows upload dir exists when using defaults
+$uploadDir = if ($env:GOVIEW_FILE_URL) { $env:GOVIEW_FILE_URL } else { "D:\upload" }
+if (-not (Test-Path $uploadDir)) {
+  New-Item -ItemType Directory -Force -Path $uploadDir | Out-Null
+  Write-Host "Created upload dir: $uploadDir"
 }
 
 Write-Host "Starting Spring Boot from WAR..."

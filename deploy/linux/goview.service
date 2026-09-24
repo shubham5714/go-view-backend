@@ -1,0 +1,40 @@
+[Unit]
+Description=GoView / vScreen API (Spring Boot)
+Documentation=file:///opt/goview/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=goview
+Group=goview
+WorkingDirectory=/opt/goview
+
+# Secrets and runtime config (not in git)
+EnvironmentFile=-/opt/goview/goview.env
+
+# JDK 17+ opens required by MyBatis-Plus lambda cache
+ExecStart=/usr/bin/java \
+  --add-opens java.base/java.lang.invoke=ALL-UNNAMED \
+  --add-opens java.base/java.lang=ALL-UNNAMED \
+  --add-opens java.base/java.math=ALL-UNNAMED \
+  --add-opens java.base/java.util=ALL-UNNAMED \
+  -jar /opt/goview/goview.war
+
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+SuccessExitStatus=143
+
+# Hardening (safe defaults for a JAR service)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/goview/upload /opt/goview/logs
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=goview
+
+[Install]
+WantedBy=multi-user.target

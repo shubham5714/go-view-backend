@@ -68,11 +68,11 @@ public class FileController extends BaseController{
 	
 	@ApiOperation(value = "修改", notes = "修改")
 	@PutMapping("/update")
-	public AjaxResult update(String id,@RequestBody MultipartFile object) throws IllegalStateException, IOException{
+	public AjaxResult update(String id,@RequestParam("object") MultipartFile object) throws IllegalStateException, IOException{
 		SysFile sysFile=iSysFileService.getById(id);
 		if(sysFile!=null){
 			String fileurl=sysFile.getAbsolutePath()+sysFile.getRelativePath()+File.separator+sysFile.getFileName();
-			object.transferTo(new File(fileurl));
+			writeMultipartFile(object, new File(fileurl));
 			return success("修改成功");
 		}else{
 			return error();
@@ -87,7 +87,7 @@ public class FileController extends BaseController{
 	 * @throws Exception
 	 */
 	@PostMapping("/upload")
-	public AjaxResult upload(@RequestBody MultipartFile object) throws IOException{
+	public AjaxResult upload(@RequestParam("object") MultipartFile object) throws IOException{
 		String fileName = object.getOriginalFilename();
 		//默认文件格式
 		String suffixName=v2Config.getDefaultFormat();
@@ -120,7 +120,7 @@ public class FileController extends BaseController{
 		sysFile.setAbsolutePath(absolutePath.replace("file:",""));
 		iSysFileService.saveOrUpdate(sysFile);
 		File desc = getAbsoluteFile(v2Config.getFileurl()+File.separator+filepath,fileSuffixName);
-		object.transferTo(desc);
+		writeMultipartFile(object, desc);
 		SysFileVo sysFileVo=BeanUtil.copyProperties(sysFile, SysFileVo.class);
 		sysFileVo.setFileurl(v2Config.getHttpurl()+sysFile.getVirtualKey()+"/"+sysFile.getRelativePath()+"/"+sysFile.getFileName());
 		return AjaxResult.successData(200, sysFileVo);
@@ -217,7 +217,7 @@ public class FileController extends BaseController{
 	 * @throws Exception
 	 */
 	@PostMapping("/coverupload")
-	public AjaxResult coverupload(@RequestBody MultipartFile object,String key,String relativePath) throws IOException{
+	public AjaxResult coverupload(@RequestParam("object") MultipartFile object,String key,String relativePath) throws IOException{
 		
 		String fileName = object.getOriginalFilename();
 		String suffixName=v2Config.getDefaultFormat();
@@ -249,7 +249,7 @@ public class FileController extends BaseController{
 		sysFile.setAbsolutePath(absolutePath);
 		iSysFileService.saveOrUpdate(sysFile);
 		File desc = getAbsoluteFile(absolutePath+filepath,fileSuffixName);
-		object.transferTo(desc);
+		writeMultipartFile(object, desc);
 		SysFileVo sysFileVo=BeanUtil.copyProperties(sysFile, SysFileVo.class);
 		sysFileVo.setFileurl(v2Config.getHttpurl()+sysFile.getVirtualKey()+"/"+sysFile.getRelativePath()+"/"+sysFile.getFileName());
 		return AjaxResult.successData(200, sysFileVo);
@@ -335,17 +335,35 @@ public class FileController extends BaseController{
 	
     public  final static File getAbsoluteFile(String uploadDir, String filename) throws IOException
     {
-        File desc = new File(uploadDir+File.separator + filename);
-
-        if (!desc.getParentFile().exists())
-        {
-            desc.getParentFile().mkdirs();
+        File desc = new File(uploadDir + File.separator + filename);
+        File parent = desc.getParentFile();
+        if (parent != null && !parent.exists() && !parent.mkdirs()) {
+            throw new IOException("Failed to create upload directory: " + parent.getAbsolutePath());
         }
-        if (!desc.exists())
-        {
-            desc.createNewFile();
-        }
+        // Do not createNewFile() here — MultipartFile.transferTo / Part.write fails on Windows
+        // when the destination already exists as an empty file.
         return desc;
+    }
+
+    /**
+     * Reliably write a multipart upload to disk (avoids Tomcat Part.write absolute-path quirks).
+     */
+    public static void writeMultipartFile(MultipartFile object, File dest) throws IOException {
+        if (object == null || object.isEmpty()) {
+            throw new IOException("Upload file is empty");
+        }
+        File parent = dest.getParentFile();
+        if (parent != null && !parent.exists() && !parent.mkdirs()) {
+            throw new IOException("Failed to create upload directory: " + parent.getAbsolutePath());
+        }
+        try (java.io.InputStream in = object.getInputStream();
+             java.io.OutputStream out = new java.io.FileOutputStream(dest)) {
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) > 0) {
+                out.write(buf, 0, n);
+            }
+        }
     }
 	
 	
