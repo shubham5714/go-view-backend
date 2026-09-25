@@ -303,6 +303,26 @@ public class ApiController  extends BaseController {
 		return success();
 
 	}
+
+	/**
+	 * Session introspection for AI-SOC FastMCP BFF (satoken header).
+	 * Returns the SSO-bound tenant so chart MCP calls can be authorized.
+	 */
+	@ApiOperation(value = "Current SSO session", notes = "Used by AI-SOC to validate GoView satoken")
+	@GetMapping("/session")
+	@ResponseBody
+	public AjaxResult session() {
+		if (!StpUtil.isLogin()) {
+			return error(401, "Not logged in");
+		}
+		SysUser user = SaTokenUtil.getUser();
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("userId", SaTokenUtil.getUserId());
+		data.put("tenantId", SaTokenUtil.getTenantId());
+		data.put("email", SaTokenUtil.getEmail());
+		data.put("username", user != null ? user.getUsername() : null);
+		return success().put("data", data);
+	}
 	
 	
 	@ApiOperation(value = "获取oss地址", notes = "获取oss地址")
