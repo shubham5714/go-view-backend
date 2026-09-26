@@ -72,7 +72,7 @@ Set at least:
 
 | Variable | Example |
 |----------|---------|
-| `GOVIEW_DB_URL` | `jdbc:postgresql://…pooler.supabase.com:5432/postgres?sslmode=require` |
+| `GOVIEW_DB_URL` | `jdbc:postgresql://…pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0` |
 | `GOVIEW_DB_USER` | `postgres.<ref>` |
 | `GOVIEW_DB_PASSWORD` | your password |
 | `SPRING_PROFILES_ACTIVE` | `prod` |

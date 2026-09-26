@@ -1,5 +1,6 @@
-# Postgres / Supabase — requires GOVIEW_DB_* env vars (see .env + run-dev.ps1).
-# Plain `mvnd spring-boot:run` without env will fail fast instead of hitting localhost.
+# Postgres via Supabase Transaction pooler (PgBouncer, port 6543).
+# Requires GOVIEW_DB_* env vars (see .env.example + run-dev.ps1).
+# JDBC URL must include prepareThreshold=0 — server prepared statements break in transaction mode.
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -7,5 +8,14 @@ spring:
     username: ${GOVIEW_DB_USER}
     password: ${GOVIEW_DB_PASSWORD}
     hikari:
-      maximum-pool-size: 10
+      # Keep client pool small; transaction pooler multiplexes to real DB connections.
+      maximum-pool-size: 5
+      minimum-idle: 1
       connection-timeout: 30000
+      validation-timeout: 5000
+      # Recycle before pooler/proxy idle closes leave dead sockets in the pool.
+      max-lifetime: 180000
+      idle-timeout: 60000
+      # Ping idle connections so closed sockets are dropped before request time.
+      keepalive-time: 30000
+      pool-name: GoviewHikariPool
